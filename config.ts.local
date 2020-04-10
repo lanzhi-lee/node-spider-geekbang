@@ -10,3 +10,6 @@ export const Headers = {
 
 // 课程基本信息
 export const courseInfo = { cid: 189, size: 100, prev: 0, order: 'earliest', sample: false }
+
+// 抓取错误列表，仅在抓取错误，重试时使用
+export const errList = []
