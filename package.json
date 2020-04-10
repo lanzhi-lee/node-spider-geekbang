@@ -6,7 +6,8 @@
   "keywords": [],
   "author": "李三思",
   "scripts": {
-    "start": "npx ts-node index.ts"
+    "start": "npx ts-node index.ts",
+    "merge": "npx ts-node merge.ts"
   },
   "dependencies": {
     "axios": "^0.19.2",

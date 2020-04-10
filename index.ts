@@ -2,6 +2,7 @@ import fs from 'fs'
 import chalk from 'chalk'
 import Axios from 'axios'
 import { sleep } from 'sleep'
+import { getProcessArgs, ErrorLog, WarnLog, SuccessLog, NormalLog } from './utils'
 
 import { Headers, courseInfo, errList } from './config'
 
@@ -46,7 +47,7 @@ function getArticleList(courseInfo: CourseInfo) {
         resolve(list)
       })
       .catch((err) => {
-        console.log('> Error in getArticleList')
+        ErrorLog('> Error in getArticleList')
         resolve([])
       })
   })
@@ -73,28 +74,17 @@ function getSigleArticleContent(id: string) {
         resolve({ title, result })
       })
       .catch((err) => {
-        console.log(chalk.white.bgRed(`> Error in getSigleArticleContent ${id}`))
+        ErrorLog(`> Error in getSigleArticleContent ${id}`)
         resolve({ title: '', result: '' })
       })
   })
-}
-
-/**
- * 获取node命令行参数
- */
-function getProcessArgs() {
-  return process.argv.slice(2).reduce((pre: CommonObj, cur: string) => {
-    const temp = cur.split('=')
-    pre[temp[0]] = temp[1]
-    return pre
-  }, <CommonObj>{})
 }
 
 // note 主函数
 ;(async () => {
   // 配置文件检测
   if (!fs.existsSync('./config.ts')) {
-    console.log(chalk.white.bgRed(`> Error: The config file is not exist! Please read README.md first! `))
+    ErrorLog(`> Error: The config file is not exist! Please read README.md first!`)
     process.exit(1)
   }
 
@@ -111,7 +101,7 @@ function getProcessArgs() {
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir)
-      console.log(chalk.white.bgGreen(`Create Custom output directory "${targetDir}" successfully \n`))
+      SuccessLog(`Create Custom output directory "${targetDir}" successfully \n`)
     }
   }
 
@@ -129,7 +119,7 @@ function getProcessArgs() {
   while (curIndex < articles.length) {
     const info = articles[curIndex]
 
-    console.log(`> request ${info.id} ---> ${info.title}`)
+    NormalLog(`> request ${info.id} ---> ${info.title}`)
     const data = await getSigleArticleContent(info.id)
 
     if (data.title) {
@@ -137,10 +127,10 @@ function getProcessArgs() {
       const fileName = `${prefix}-${data.title.replace('/', '|')}.md`
       try {
         fs.writeFileSync(`${targetDir}/${fileName}`, data.result)
-        console.log(chalk.white.bgGreen(`write ${fileName} successfully \n`))
+        SuccessLog(`write ${fileName} successfully \n`)
       } catch (error) {
         curErrList.push(info)
-        console.log(chalk.white.bgRed(`> Error in write file ${info.title}`))
+        ErrorLog(`> Error in write file ${info.title}`)
       }
     } else {
       curErrList.push(info)
@@ -150,10 +140,10 @@ function getProcessArgs() {
     curIndex++
   }
 
-  if (!curErrList.length) console.log(chalk.white.bgGreen('\n\n> All successful! Enjoy!'))
+  if (!curErrList.length) SuccessLog('\n\n> All successful! Enjoy!')
   else {
-    console.log(chalk.yellow('\n> Error in get: '))
+    WarnLog('\n> Error in get: ')
     console.log(curErrList)
-    console.log(chalk.yellow('> You can copy the above array to config.ts.errList and try again'))
+    WarnLog('> You can copy the above array to config.ts.errList and try again')
   }
 })()
