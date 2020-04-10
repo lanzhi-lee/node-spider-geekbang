@@ -6,6 +6,17 @@
   "keywords": [],
   "author": "李三思",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx ts-node index.ts"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "sleep": "^6.1.0",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^13.11.1",
+    "@types/sleep": "^0.0.7",
+    "chalk": "^4.0.0"
   }
 }
