@@ -1,0 +1,12 @@
+// Headers 需要自行登录极客时间从请求上获取
+export const Headers = {
+  'Content-Type': 'application/json',
+  Cookie: '',
+  Origin: 'https://time.geekbang.org',
+  Referer: 'https://time.geekbang.org/course/detail/211-123391',
+  'User-Agent':
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+}
+
+// 课程基本信息
+export const courseInfo = { cid: 189, size: 100, prev: 0, order: 'earliest', sample: false }
