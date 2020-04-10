@@ -46,7 +46,7 @@ function getArticleList(courseInfo: CourseInfo) {
         resolve(list)
       })
       .catch((err) => {
-        console.log('err')
+        console.log('> Error in getArticleList')
         resolve([])
       })
   })
@@ -73,14 +73,23 @@ function getSigleArticleContent(id: string) {
         resolve({ title, result })
       })
       .catch((err) => {
-        console.log(chalk.white.bgRed(`err in getSigleArticleContent ${id}`))
+        console.log(chalk.white.bgRed(`> Error in getSigleArticleContent ${id}`))
         resolve({ title: '', result: '' })
       })
   })
 }
 
-// console.log(chalk.white.bgRed(`> Error: The config file is not exist! Please read README.md first! `))
-// process.exit(0)
+/**
+ * 获取node命令行参数
+ */
+function getProcessArgs() {
+  return process.argv.slice(2).reduce((pre: CommonObj, cur: string) => {
+    const temp = cur.split('=')
+    pre[temp[0]] = temp[1]
+    return pre
+  }, <CommonObj>{})
+}
+
 // note 主函数
 ;(async () => {
   // 配置文件检测
@@ -89,13 +98,29 @@ function getSigleArticleContent(id: string) {
     process.exit(1)
   }
 
+  // 获取node命令行参数
+  const processArgs = getProcessArgs()
+
   // 初始化输出目录
   if (!fs.existsSync('./output/')) fs.mkdirSync('./output/')
+
+  // 自定义目录支持
+  let targetDir = './output/'
+  if (processArgs.targetDir) {
+    targetDir = `./output/${processArgs.targetDir}`
+
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir)
+      console.log(chalk.white.bgGreen(`Create Custom output directory "${targetDir}" successfully \n`))
+    }
+  }
 
   // 初始化请求列表
   let articles = await getArticleList(courseInfo)
   if (errList.length) articles = errList
   else articles = await getArticleList(courseInfo)
+  // 节列表获取失败直接退出进程
+  if (!articles.length) process.exit(1)
   // console.log(articles)
 
   // 主逻辑
@@ -104,12 +129,19 @@ function getSigleArticleContent(id: string) {
   while (curIndex < articles.length) {
     const info = articles[curIndex]
 
-    console.log(`request ${info.id} ---> ${info.title}\n`)
+    console.log(`> request ${info.id} ---> ${info.title}`)
     const data = await getSigleArticleContent(info.id)
 
     if (data.title) {
-      fs.writeFileSync(`./output/${data.title.replace('/', '|')}.md`, data.result)
-      console.log(chalk.white.bgGreen(`write ${data.title} successfully \n`))
+      const prefix = `${curIndex}`.padStart(2, '0')
+      const fileName = `${prefix}-${data.title.replace('/', '|')}.md`
+      try {
+        fs.writeFileSync(`${targetDir}/${fileName}`, data.result)
+        console.log(chalk.white.bgGreen(`write ${fileName} successfully \n`))
+      } catch (error) {
+        curErrList.push(info)
+        console.log(chalk.white.bgRed(`> Error in write file ${info.title}`))
+      }
     } else {
       curErrList.push(info)
     }
@@ -118,7 +150,7 @@ function getSigleArticleContent(id: string) {
     curIndex++
   }
 
-  if (!curErrList.length) console.log(chalk.white.bgGreen('all successful'))
+  if (!curErrList.length) console.log(chalk.white.bgGreen('\n\n> All successful! Enjoy!'))
   else {
     console.log(chalk.yellow('\n> Error in get: '))
     console.log(curErrList)

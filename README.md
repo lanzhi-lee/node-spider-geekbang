@@ -14,10 +14,24 @@
 yarn                    # 安装依赖
 ```
 
-复制`config.ts.local`更名为`config.ts`,修改其中的配置
+复制`config.ts.local`更名为`config.ts`，修改其中的配置
 
 ```bash
 yarn start              # 执行主文件
-
+# or
 npx ts-node index.ts    # 执行主文件
 ```
+
+#### 输出目录
+
+默认输出文件夹为`./output/`，如需自定义，可添加`targetDir`参数，例如：
+
+```bash
+yarn start targetDir=重学前端
+```
+
+此时，文件将会保存在`./output/重学前端`下
+
+### FAQ
+
+- todo...
