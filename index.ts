@@ -2,7 +2,7 @@ import fs from 'fs'
 import chalk from 'chalk'
 import Axios from 'axios'
 import { sleep } from 'sleep'
-import { getProcessArgs, ErrorLog, WarnLog, SuccessLog, NormalLog } from './utils'
+import { getProcessArgs, ErrorLog, WarnLog, SuccessLog, NormalLog, transCode } from './utils'
 
 import { Headers, courseInfo, errList } from './config'
 
@@ -124,7 +124,7 @@ function getSigleArticleContent(id: string) {
 
     if (data.title) {
       const prefix = `${curIndex}`.padStart(2, '0')
-      const fileName = `${prefix}-${data.title.replace('/', '|')}.md`
+      const fileName = `${prefix}-${transCode(data.title)}.md`
       try {
         fs.writeFileSync(`${targetDir}/${fileName}`, data.result)
         SuccessLog(`write ${fileName} successfully \n`)

@@ -30,3 +30,13 @@ export function ErrorLog(str: string) {
 export function NormalLog(str: string) {
   console.log(str)
 }
+
+/**
+ * 有时标题上会出现一些特殊字符，导致文件无法正常写入，因此在写入前增加一层转码
+ * @param str 目标字符换
+ *
+ * '/' ---> '|'
+ */
+export function transCode(str: string) {
+  return str.replace('/', '|')
+}
